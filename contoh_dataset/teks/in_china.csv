@@ -1,0 +1,5 @@
+doc_id,words_in_document,in_china
+1,chinese beijing chinese,yes
+2,chinese chinese shanghai,yes
+3,chinese macao,yes
+4,tokyo japan chinese,no
