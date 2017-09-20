@@ -1,5 +1,99 @@
+import pandas as pd
+import pickle
+
 class PengklasifikasiNaiveBayesTeks():
-    pass
+
+    def set_model_dari_data_latih(self, data_latih):
+        self.model = {}
+
+        df_data_latih = pd.DataFrame(data_latih)
+
+        self.jumlah_baris_data_latih = len(df_data_latih)
+
+        self.kelas_unik = self._get_kelas_unik(df_data_latih)
+
+        self.kata_unik = self._get_kata_unik(df_data_latih)
+
+        self.jumlah_kata_unik = len(self.kata_unik)
+
+        self.total_kata_unik = len(self.kata_unik)
+
+        self.larik_prob_atribut_given_kelas = self._get_larik_prob_atribut_given_kelas()
+
+        self.model = {'kelas':self.kelas_unik,'prob_atribut_given_kelas':self.larik_prob_atribut_given_kelas}
+
+        #print(self.kelas_unik)
+        #print(self.kata_unik)
+        #print(self.larik_prob_atribut_given_kelas)
+
+        print(self.model)
+
+    def _get_kata_unik(self, df_data_latih):
+        kata_unik = {}
+
+        for index,row in df_data_latih.iterrows():
+
+            pecah_kata_per_baris = row[0].split()
+            kelas_per_baris = row[1]
+
+            for kata in pecah_kata_per_baris:
+                if kata in kata_unik:
+                    kata_unik[kata]['total'] += 1
+                else:
+                    kata_unik[kata] = {'total':1}
+                    for kelas in self.kelas_unik:
+                        kata_unik[kata][kelas] = 0
+
+                kata_unik[kata][kelas_per_baris] += 1
+
+        return kata_unik
+
+    def _get_kelas_unik(self, df_data_latih_kelas):
+        kelas_unik = {}
+
+
+
+        for index, row in df_data_latih_kelas.iterrows():
+            kelas_per_baris = row[1]
+            if kelas_per_baris in kelas_unik:
+                kelas_unik[kelas_per_baris]['total'] += 1
+            else:
+                kelas_unik[kelas_per_baris] = {'total':1,'total_kata':0,'prob':0}
+
+            kelas_unik[kelas_per_baris]['total_kata'] += len(row[0].split())
+            kelas_unik[kelas_per_baris]['prob'] = kelas_unik[kelas_per_baris]['total'] / self.jumlah_baris_data_latih
+
+        return kelas_unik
+
+    def _get_larik_prob_atribut_given_kelas(self):
+        prob_atribut_given_kelas = {}
+
+        for kata in self.kata_unik:
+            if kata not in prob_atribut_given_kelas:
+                prob_atribut_given_kelas[kata] = {}
+
+            for kelas in self.kelas_unik:
+                prob_atribut_given_kelas[kata][kelas] = self._get_prob_atribut_given_kelas(kata,kelas)
+
+        return prob_atribut_given_kelas
+
+    def _get_prob_atribut_given_kelas(self,kata,kelas):
+
+        print("P(",kata,"|",kelas,") (",self.kata_unik[kata][kelas],"+ 1 ) / (",self.kelas_unik[kelas]['total_kata'],"+",self.jumlah_kata_unik,")")
+        prob_atribut_given_kelas = round((self.kata_unik[kata][kelas]+1)/(self.kelas_unik[kelas]['total_kata']+self.jumlah_kata_unik),3)
+
+
+
+        return prob_atribut_given_kelas
+
+    def simpan_model_data_latih_ke_file_pickle(self,nama_file_pickle):
+        with open(nama_file_pickle,'wb') as handle:
+            pickle.dump(self.model,handle,protocol=pickle.HIGHEST_PROTOCOL)
+
+        with open(nama_file_pickle, 'rb') as handle:
+            b = pickle.load(handle)
+            print("model dari pickle ",b)
+
 
 class PengklasifikasiNaiveBayesTradisional():
     pass
@@ -41,14 +135,17 @@ class PengklasifikasiNaiveBayes:
 
         if jenis_data_set.lower() == 'teks':
             self.pnb = PengklasifikasiNaiveBayesTeks()
-        elif jenis_data_set.lower() == 'id3':
+        elif jenis_data_set.lower() == 'tradisional':
             self.pnb = PengklasifikasiNaiveBayesTradisional()
         else:
             self.pnb = PengklasifikasiNaiveBayesTeks()
         pass
 
-    def set_model_dari_data_latih(self):
-        pass
+    def set_model_dari_data_latih(self,data_latih):
+        self.pnb.set_model_dari_data_latih(data_latih)
+
+    def simpan_model_data_latih_ke_file_pickle(self, nama_file_pickle):
+        self.pnb.simpan_model_data_latih_ke_file_pickle(nama_file_pickle)
 
     def set_model_dari_file(self):
         pass
