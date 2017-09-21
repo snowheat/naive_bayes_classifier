@@ -26,7 +26,7 @@ class PengklasifikasiNaiveBayesTeks():
         self.model = {'kelas':self.kelas_unik,'prob_atribut_given_kelas':self.larik_prob_atribut_given_kelas}
 
         #print(self.kelas_unik)
-        print(self.kata_unik)
+        #print(self.kata_unik)
         #print(self.larik_prob_atribut_given_kelas)
 
         print(self.model)
@@ -90,13 +90,10 @@ class PengklasifikasiNaiveBayesTeks():
 
         return likelihood
 
-    def simpan_model_data_latih_ke_file_pickle(self,nama_file_pickle):
+    def simpan_model_ke_file(self,nama_file_pickle):
         with open(nama_file_pickle,'wb') as handle:
             pickle.dump(self.model,handle,protocol=pickle.HIGHEST_PROTOCOL)
 
-        with open(nama_file_pickle, 'rb') as handle:
-            b = pickle.load(handle)
-            print("model dari pickle ",b)
 
     def get_estimasi_parameter_map(self,kata,kelas):
         likelihood = round((self.kata_unik[kata][kelas]+1) / (self.kelas_unik[kelas]['total_kata']+self.total_kata_unik), 3)
@@ -105,6 +102,20 @@ class PengklasifikasiNaiveBayesTeks():
     def get_estimasi_parameter_mle(self,kata,kelas):
         likelihood = round((self.kata_unik[kata][kelas]) / (self.kelas_unik[kelas]['total_kata']), 3)
         return likelihood
+
+    def set_model_dari_file(self, nama_file_pickle):
+        with open(nama_file_pickle, 'rb') as handle:
+            b = pickle.load(handle)
+            print("model dari pickle ",b)
+
+    def get_likelihood(self):
+        return self.model['prob_atribut_given_kelas']
+
+    def get_prior(self):
+        prior = {}
+        for k,v in self.model['kelas'].items():
+            prior[k] = v['prob']
+        return prior
 
 
 class PengklasifikasiNaiveBayesTradisional():
@@ -156,23 +167,21 @@ class PengklasifikasiNaiveBayes:
     def set_model_dari_data_latih(self,data_latih):
         self.pnb.set_model_dari_data_latih(data_latih)
 
-    def simpan_model_data_latih_ke_file_pickle(self, nama_file_pickle):
-        self.pnb.simpan_model_data_latih_ke_file_pickle(nama_file_pickle)
+    def simpan_model_ke_file(self, nama_file_pickle):
+        self.pnb.simpan_model_ke_file(nama_file_pickle)
 
-    def set_model_dari_file(self):
-        pass
+    def set_model_dari_file(self, nama_file_pickle):
+        self.pnb.set_model_dari_file(nama_file_pickle)
 
     def get_likelihood(self):
-        pass
+        return self.pnb.get_likelihood()
+
 
     def get_prior(self):
-        pass
-
-    def simpan_model_ke_file(self):
-        pass
+        return self.pnb.get_prior()
 
 
-    def klasifikasi(self):
+    def klasifikasi(self,data_uji):
         pass
 
     def tes(self):
