@@ -1,17 +1,13 @@
 from naivebayes import PengklasifikasiNaiveBayes
 
-
-
-
 file_model = "contoh_model_chinese.pickle"
 
+pnb = PengklasifikasiNaiveBayes(jenis_data_set='teks', estimasi_parameter='mle')
 
-pnb = PengklasifikasiNaiveBayes(jenis_data_set='teks',estimasi_parameter='mle')
-
-data_latih = [["chinese beijing chinese","yes"],
-    ["chinese chinese shanghai","yes"],
-    ["chinese macao","yes"],
-    ["tokyo japan chinese","no"],]
+data_latih = [["chinese beijing chinese", "yes"],
+              ["chinese chinese shanghai", "yes"],
+              ["chinese macao", "yes"],
+              ["tokyo japan chinese", "no"], ]
 
 data_uji = "chinese chinese chinese tokyo japan"
 
@@ -40,8 +36,7 @@ Menampilkan nilai prior hasil training
 """
 print(pnb.get_likelihood())
 
-
 """
 Hasil klasifikasi data uji
 """
-print("HASIL KLASIFIKASI DATA UJI : ",pnb.klasifikasi(data_uji))
+print("HASIL KLASIFIKASI DATA UJI : ", pnb.klasifikasi(data_uji))
