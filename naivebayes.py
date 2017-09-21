@@ -3,6 +3,9 @@ import pickle
 
 class PengklasifikasiNaiveBayesTeks():
 
+    def __init__(self, estimasi_parameter='mle'):
+        self.estimasi_parameter=estimasi_parameter
+
     def set_model_dari_data_latih(self, data_latih):
         self.model = {}
 
@@ -23,7 +26,7 @@ class PengklasifikasiNaiveBayesTeks():
         self.model = {'kelas':self.kelas_unik,'prob_atribut_given_kelas':self.larik_prob_atribut_given_kelas}
 
         #print(self.kelas_unik)
-        #print(self.kata_unik)
+        print(self.kata_unik)
         #print(self.larik_prob_atribut_given_kelas)
 
         print(self.model)
@@ -51,8 +54,6 @@ class PengklasifikasiNaiveBayesTeks():
     def _get_kelas_unik(self, df_data_latih_kelas):
         kelas_unik = {}
 
-
-
         for index, row in df_data_latih_kelas.iterrows():
             kelas_per_baris = row[1]
             if kelas_per_baris in kelas_unik:
@@ -73,18 +74,21 @@ class PengklasifikasiNaiveBayesTeks():
                 prob_atribut_given_kelas[kata] = {}
 
             for kelas in self.kelas_unik:
-                prob_atribut_given_kelas[kata][kelas] = self._get_prob_atribut_given_kelas(kata,kelas)
+                prob_atribut_given_kelas[kata][kelas] = self._get_likehood(kata, kelas)
 
         return prob_atribut_given_kelas
 
-    def _get_prob_atribut_given_kelas(self,kata,kelas):
+    def _get_likehood(self, kata, kelas):
 
-        print("P(",kata,"|",kelas,") (",self.kata_unik[kata][kelas],"+ 1 ) / (",self.kelas_unik[kelas]['total_kata'],"+",self.jumlah_kata_unik,")")
-        prob_atribut_given_kelas = round((self.kata_unik[kata][kelas]+1)/(self.kelas_unik[kelas]['total_kata']+self.jumlah_kata_unik),3)
+        if self.estimasi_parameter is 'map':
+            likelihood = self.get_estimasi_parameter_map(kata,kelas)
 
 
+        if self.estimasi_parameter is 'mle':
+            likelihood = self.get_estimasi_parameter_mle(kata,kelas)
 
-        return prob_atribut_given_kelas
+
+        return likelihood
 
     def simpan_model_data_latih_ke_file_pickle(self,nama_file_pickle):
         with open(nama_file_pickle,'wb') as handle:
@@ -93,6 +97,14 @@ class PengklasifikasiNaiveBayesTeks():
         with open(nama_file_pickle, 'rb') as handle:
             b = pickle.load(handle)
             print("model dari pickle ",b)
+
+    def get_estimasi_parameter_map(self,kata,kelas):
+        likelihood = round((self.kata_unik[kata][kelas]+1) / (self.kelas_unik[kelas]['total_kata']+self.total_kata_unik), 3)
+        return likelihood
+
+    def get_estimasi_parameter_mle(self,kata,kelas):
+        likelihood = round((self.kata_unik[kata][kelas]) / (self.kelas_unik[kelas]['total_kata']), 3)
+        return likelihood
 
 
 class PengklasifikasiNaiveBayesTradisional():
@@ -134,9 +146,9 @@ class PengklasifikasiNaiveBayes:
         print("* * Hasil Model & Prediksi ada setelah log ini * * ")
 
         if jenis_data_set.lower() == 'teks':
-            self.pnb = PengklasifikasiNaiveBayesTeks()
+            self.pnb = PengklasifikasiNaiveBayesTeks(estimasi_parameter)
         elif jenis_data_set.lower() == 'tradisional':
-            self.pnb = PengklasifikasiNaiveBayesTradisional()
+            self.pnb = PengklasifikasiNaiveBayesTradisional(estimasi_parameter)
         else:
             self.pnb = PengklasifikasiNaiveBayesTeks()
         pass
