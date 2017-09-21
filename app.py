@@ -6,14 +6,14 @@ from naivebayes import PengklasifikasiNaiveBayes
 file_model = "contoh_model_chinese.pickle"
 
 
-pnb = PengklasifikasiNaiveBayes(jenis_data_set='teks',estimasi_parameter='map')
+pnb = PengklasifikasiNaiveBayes(jenis_data_set='teks',estimasi_parameter='mle')
 
 data_latih = [["chinese beijing chinese","yes"],
     ["chinese chinese shanghai","yes"],
     ["chinese macao","yes"],
     ["tokyo japan chinese","no"],]
 
-data_uji = "chinese tokyo japan tokyo japan"
+data_uji = "chinese chinese chinese tokyo japan"
 
 """
 Membuat model dari data latih

@@ -133,7 +133,8 @@ class PengklasifikasiNaiveBayesTeks():
 
 
                 print("*",likelihood[nilai_data_uji][kelas])
-                prob_posterior *= likelihood[nilai_data_uji][kelas]
+                if likelihood[nilai_data_uji][kelas] > 0:
+                    prob_posterior *= likelihood[nilai_data_uji][kelas]
 
             print(prob_posterior)
 
