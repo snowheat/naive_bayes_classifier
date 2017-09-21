@@ -117,6 +117,40 @@ class PengklasifikasiNaiveBayesTeks():
             prior[k] = v['prob']
         return prior
 
+    def klasifikasi(self, data_uji):
+        argmax = 0
+        kelas_argmax = {}
+        kelas_dipilih = None
+        likelihood = self.get_likelihood()
+
+        for kelas,nilai in self.get_prior().items():
+
+
+            prob_posterior = nilai
+            print(prob_posterior)
+
+            for nilai_data_uji in data_uji.split():
+
+
+                print("*",likelihood[nilai_data_uji][kelas])
+                prob_posterior *= likelihood[nilai_data_uji][kelas]
+
+            print(prob_posterior)
+
+            prob_posterior = round(prob_posterior,8)
+
+            if prob_posterior > argmax:
+                argmax = prob_posterior
+                kelas_dipilih = kelas
+
+
+            kelas_argmax[kelas] = prob_posterior
+
+
+        print(kelas_argmax)
+
+        return kelas_dipilih
+
 
 class PengklasifikasiNaiveBayesTradisional():
     pass
@@ -182,7 +216,4 @@ class PengklasifikasiNaiveBayes:
 
 
     def klasifikasi(self,data_uji):
-        pass
-
-    def tes(self):
-        pass
+        return self.pnb.klasifikasi(data_uji)
